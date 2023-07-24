@@ -16,11 +16,13 @@ import { formSchema } from "./constants";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/loader";
+import { useProModal } from "@/hooks/use-pro-modal";
 
 
 
 const VideoPage = ({}) => {
   const router = useRouter();
+  const proModal = useProModal();
 
   const [video, setVideo] = useState<string>();
 
@@ -42,8 +44,10 @@ const VideoPage = ({}) => {
       setVideo(response.data[0])
       form.reset();
     } catch (error) {
-      // TODO: Open pro modal
-      console.log(error);
+      // @ts-ignore
+      if(error?.response?.status === 403) {
+        proModal.onOpen();
+      }
     } finally {
       router.refresh();
     }

@@ -26,11 +26,13 @@ import { cn } from "@/lib/utils";
 import { amountOptions, formSchema, resolutionOptions } from "./constants";
 import { Card, CardFooter } from "@/components/ui/card";
 import Image from "next/image";
+import { useProModal } from "@/hooks/use-pro-modal";
 
 interface ImagePageProps {}
 
 const ImagePage: FC<ImagePageProps> = ({}) => {
   const router = useRouter();
+  const proModal = useProModal();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -55,14 +57,15 @@ const ImagePage: FC<ImagePageProps> = ({}) => {
 
       form.reset();
     } catch (error) {
-      // TODO: Open pro modal
-      console.log(error);
+      // @ts-ignore
+      if(error?.response?.status === 403) {
+        proModal.onOpen();
+      }
     } finally {
       router.refresh();
     }
   };
 
-  console.log(images);
 
   const handleDownload = (index:number) => {
     const fileURL = images[index];
